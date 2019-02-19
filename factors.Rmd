@@ -16,6 +16,8 @@ output:
 ```{r setup, include=FALSE}
 library(knitr)
 library(tidyverse)
+conflicted::conflict_prefer("filter", "dplyr")
+
 options(htmltools.dir.version = FALSE,
         tibble.width = 70,
         ggplot2.continuous.colour = "viridis",
@@ -26,7 +28,7 @@ opts_chunk$set(
   fig.align = "center",
   cache = TRUE
 )
-theme_set(theme_bw() +
+theme_set(theme_minimal() +
             theme(text = element_text(size = 20))) 
 ```
 
@@ -57,7 +59,7 @@ class: inverse, middle, center
 
 ---
 
-## What you see is not what you get
+# What you see is NOT what you get
 
 ```{r}
 treatment <- c(50, 0, 50, 100)
@@ -80,7 +82,7 @@ class: middle, center
 # Factors are stored as _integers_
 
 ---
-## Let's take two data frames...
+# Let's take two data frames...
 
 ```{r echo = FALSE}
 library(tidyverse)
@@ -100,7 +102,7 @@ b
 
 ---
 
-## R sometimes handles factor magic for you...
+# R sometimes handles factor magic for you...
 
 .pull-left[
 ```{r}
@@ -116,7 +118,7 @@ rbind(a, b) #<<
 ]
 ---
 
-## Other times, it fails without warning
+# Other times, it fails without warning
 .pull-left[
 ```{r}
 a
@@ -131,7 +133,7 @@ c(a$drink, b$drink) #<<
 ]
 ---
 
-## The tidyverse is "lazy and surly" -- it reminds you to pay attention!
+# The tidyverse reminds you to pay attention to types!
 .pull-left[
 ```{r}
 a
@@ -178,9 +180,54 @@ library(tidyverse)
 
 ---
 
+class: center, middle
+
+![](img/poke-forcats.png)
 ```{r message = FALSE}
 pokemon <- read_csv("data/pokemon.csv")
+```
+
+---
+
+```{r}
 pokemon
+```
+
+---
+class: exercise
+
+# Exercise
+
+How many types of pokemon are there?
+
+How many body styles do they have?
+
+.bottom-right[
+![](img/meowth.png)
+]
+
+---
+Let's get graphing!
+
+```{r eval = FALSE}
+theme_set(theme_minimal()) # change the default theme
+
+options(ggplot2.continuous.colour = "viridis", # change the default colors
+        ggplot2.continuous.fill = "viridis"))
+```
+
+.center[
+![](https://media.giphy.com/media/1NLZYcJGLM9mo/giphy.gif)
+]
+---
+exclude: true
+
+```{r}
+ggplot(pokemon, aes(weight_kg, height_m)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(.~ body_style)
 ```
 
 ---
@@ -214,23 +261,91 @@ pokemon %>%
 
 ```{r}
 pokemon %>%
-  mutate(type_1 = fct_lump(type_1, 5), #<<
-         type_1 = fct_infreq(type_1),
-         type_1 = fct_rev(type_1)) %>% 
+  mutate(type_1 = fct_infreq(type_1),
+         type_1 = fct_rev(type_1),
+         type_1 = fct_relevel(type_1, "Normal")) %>% #<<
   ggplot(aes(type_1)) +
   geom_bar() + coord_flip()
 ```
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+```{r echo = FALSE}
+pokemon %>% 
+  filter(!is.na(type_2)) %>% 
+  mutate(type_2 = fct_infreq(type_2) %>% fct_rev()) %>% 
+  ggplot(aes(type_2)) +
+  geom_bar() + coord_flip()
+```
+
+.bottom-right[
+![](img/purugly.png)
+]
+
 ---
 
 ```{r}
-pokemon %>%
-  mutate(type_1 = fct_lump(type_1, 5), 
-         type_1 = fct_infreq(type_1),
-         type_1 = fct_rev(type_1),
-         type_1 = fct_relevel(type_1, "Other")) %>% #<<
-  ggplot(aes(type_1)) +
+pokemon %>% 
+  ggplot(aes(body_style)) +
   geom_bar() + coord_flip()
 ```
+
+---
+
+```{r}
+pokemon %>% 
+  mutate(body_style = fct_collapse( #<<
+    body_style, #<<
+    head = c("head_base", "head_only", "head_arms", "head_legs"), #<<
+    bipedal = c("bipedal_tailless", "bipedal_tailed") #<<
+    )) %>% #<<
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>% 
+  mutate(body_style = fct_collapse(
+    body_style,
+    head = c("head_base", "head_only", "head_arms", "head_legs"),
+    bipedal = c("bipedal_tailless", "bipedal_tailed")
+    ),
+    body_style = fct_lump(body_style, 3)) %>% #<<
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+```{r echo = FALSE}
+pokemon %>% 
+  mutate(body_style = fct_collapse(
+    body_style,
+    wings = c("two_wings", "four_wings")
+  ) %>% 
+    fct_lump(4) %>% 
+    fct_infreq()) %>% 
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+.bottom-right[
+![](img/torracat.png)
+]
 
 ---
 
@@ -261,6 +376,20 @@ pokemon %>%
 
 ---
 
+class: exercise
+
+# Discuss
+
+How is `fct_infreq()` different from `fct_reorder()`?  
+
+How are they similar?
+
+.bottom-right[
+![](img/shinx.png)
+]
+
+---
+
 ```{r}
 pokemon %>%
   count(generation, body_style)
@@ -288,15 +417,5 @@ pokemon %>%
 ```
 
 ---
-# Why care?
 
-- important for models and visualization
-- easy to get tripped up
 
-# When is it important 
-
-- binding two dataframes (if levels don't exist, it gets messed up)
-- conversion to numeric - can't go directly or else you get the underlying integer codes
-- for-loops - introducing new levels may mess things up
-
-# stringsAsFactors = FALSE

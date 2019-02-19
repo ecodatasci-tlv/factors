@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wrangling categorical variables in R</title>
+    <meta charset="utf-8">
+    <meta name="date" content="2019-02-19" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Wrangling categorical variables in R
+## EcoDataSci-TLV
+### 2019-02-19
+
+---
+
+
+
+
+# What are factors?
+
+R's representation of categorical variable. Consists of:
+
+1. A set of values
+2. An ordered set of valid levels
+
+
+```r
+eyes &lt;- factor(c("blue", "green", "green"),
+               levels = c("blue", "brown", "green"))
+eyes
+```
+
+```
+## [1] blue  green green
+## Levels: blue brown green
+```
+
+---
+
+# Why care?
+
+By default, `stringsAsFactors = TRUE` when you use `read.csv()`
+
+It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+---
+class: inverse, middle, center
+
+# Some examples
+
+---
+
+# What you see is NOT what you get
+
+
+```r
+treatment &lt;- c(50, 0, 50, 100)
+treatment
+```
+
+```
+## [1]  50   0  50 100
+```
+--
+
+```r
+treatment_f &lt;- factor(treatment)
+treatment_f
+```
+
+```
+## [1] 50  0   50  100
+## Levels: 0 50 100
+```
+--
+
+```r
+as.numeric(treatment_f)
+```
+
+```
+## [1] 2 1 2 3
+```
+
+---
+
+class: middle, center
+
+# Factors are stored as _integers_
+
+---
+# Let's take two data frames...
+
+
+
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  coffee  
+## 2 Erez  lemonade
+```
+]
+
+---
+
+# R sometimes handles factor magic for you...
+
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  coffee  
+## 2 Erez  lemonade
+```
+]
+
+.pull-right[
+
+```r
+*rbind(a, b)
+```
+
+```
+## # A tibble: 5 x 2
+##   name   drink   
+##   &lt;chr&gt;  &lt;fct&gt;   
+## 1 Alon   coffee  
+## 2 Ela    beer    
+## 3 Shaked beer    
+## 4 Oren   coffee  
+## 5 Erez   lemonade
+```
+]
+---
+
+# Other times, it fails without warning
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  coffee  
+## 2 Erez  lemonade
+```
+]
+
+.pull-right[
+
+```r
+*c(a$drink, b$drink)
+```
+
+```
+## [1] 2 1 1 1 2
+```
+]
+---
+
+# The tidyverse reminds you to pay attention to types!
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  coffee  
+## 2 Erez  lemonade
+```
+]
+
+.pull-right[
+
+```r
+*bind_rows(a, b)
+```
+
+```
+## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character
+```
+
+```
+## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector
+
+## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector
+```
+
+```
+## # A tibble: 5 x 2
+##   name   drink   
+##   &lt;chr&gt;  &lt;chr&gt;   
+## 1 Alon   coffee  
+## 2 Ela    beer    
+## 3 Shaked beer    
+## 4 Oren   coffee  
+## 5 Erez   lemonade
+```
+]
+---
+
+&lt;blockquote class="twitter-tweet tw-align-center" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;10 years after convincing all scientists to switch to R: &amp;quot;10% of genetics papers contain error due to stringsAsFactors&amp;quot;&lt;/p&gt;&amp;mdash; Austin Richardson (@heyaudy) &lt;a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw"&gt;August 30, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+
+&lt;blockquote class="twitter-tweet tw-align-center" data-lang="en" style="text-align: center;"&gt;&lt;p lang="en" dir="ltr"&gt;I hope R&amp;#39;s default stringsAsFactors=TRUE steps on a Lego.&lt;/p&gt;&amp;mdash; dr allison barner (@algaebarnacle) &lt;a href="https://twitter.com/algaebarnacle/status/1088932294427996160?ref_src=twsrc%5Etfw"&gt;January 25, 2019&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+
+&lt;blockquote class="twitter-tweet tw-align-center" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;How do I hate thee stringsAsFactors = TRUE? Let me count the ways &lt;a href="https://twitter.com/hashtag/rstats?src=hash&amp;amp;ref_src=twsrc%5Etfw"&gt;#rstats&lt;/a&gt;&lt;/p&gt;&amp;mdash; Hadley Wickham (@hadleywickham) &lt;a href="https://twitter.com/hadleywickham/status/624349074636976128?ref_src=twsrc%5Etfw"&gt;July 23, 2015&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+
+---
+
+class: inverse, middle, center
+
+# Just remember:
+
+[![](img/hellno.jpg)](https://twitter.com/JennyBryan/status/630052228624068609)
+
+---
+
+class: center, middle
+
+![](https://github.com/tidyverse/forcats/blob/master/man/figures/logo.png?raw=true)
+
+
+```r
+library(tidyverse)
+
+# or if you only want to load forcats:
+# library(forcats)
+```
+
+---
+
+class: center, middle
+
+![](img/poke-forcats.png)
+
+```r
+pokemon &lt;- read_csv("data/pokemon.csv")
+```
+
+---
+
+
+```r
+pokemon
+```
+
+```
+## # A tibble: 721 x 23
+##    number name  type_1 type_2 total    hp attack defense sp_atk sp_def
+##     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1      1 Bulb~ Grass  Poison   318    45     49      49     65     65
+##  2      2 Ivys~ Grass  Poison   405    60     62      63     80     80
+##  3      3 Venu~ Grass  Poison   525    80     82      83    100    100
+##  4      4 Char~ Fire   &lt;NA&gt;     309    39     52      43     60     50
+##  5      5 Char~ Fire   &lt;NA&gt;     405    58     64      58     80     65
+##  6      6 Char~ Fire   Flying   534    78     84      78    109     85
+##  7      7 Squi~ Water  &lt;NA&gt;     314    44     48      65     50     64
+##  8      8 Wart~ Water  &lt;NA&gt;     405    59     63      80     65     80
+##  9      9 Blas~ Water  &lt;NA&gt;     530    79     83     100     85    105
+## 10     10 Cate~ Bug    &lt;NA&gt;     195    45     30      35     20     20
+## # ... with 711 more rows, and 13 more variables: speed &lt;dbl&gt;,
+## #   generation &lt;dbl&gt;, is_legendary &lt;lgl&gt;, color &lt;chr&gt;,
+## #   has_gender &lt;lgl&gt;, pr_male &lt;dbl&gt;, egg_group_1 &lt;chr&gt;,
+## #   egg_group_2 &lt;chr&gt;, has_mega_evolution &lt;lgl&gt;, height_m &lt;dbl&gt;,
+## #   weight_kg &lt;dbl&gt;, catch_rate &lt;dbl&gt;, body_style &lt;chr&gt;
+```
+
+---
+class: exercise
+
+# Exercise
+
+How many types of pokemon are there?
+
+How many body styles do they have?
+
+.bottom-right[
+![](img/meowth.png)
+]
+
+---
+Let's get graphing!
+
+
+```r
+theme_set(theme_minimal()) # change the default theme
+
+options(ggplot2.continuous.colour = "viridis", # change the default colors
+        ggplot2.continuous.fill = "viridis"))
+```
+
+.center[
+![](https://media.giphy.com/media/1NLZYcJGLM9mo/giphy.gif)
+]
+---
+exclude: true
+
+
+```r
+ggplot(pokemon, aes(weight_kg, height_m)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(.~ body_style)
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+* mutate(type_1 = fct_infreq(type_1)) %&gt;%
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+  mutate(type_1 = fct_infreq(type_1),
+*        type_1 = fct_rev(type_1)) %&gt;%
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+  mutate(type_1 = fct_infreq(type_1),
+         type_1 = fct_rev(type_1),
+*        type_1 = fct_relevel(type_1, "Normal")) %&gt;%
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+
+.bottom-right[
+![](img/purugly.png)
+]
+
+---
+
+
+```r
+pokemon %&gt;% 
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;% 
+* mutate(body_style = fct_collapse(
+*   body_style,
+*   head = c("head_base", "head_only", "head_arms", "head_legs"),
+*   bipedal = c("bipedal_tailless", "bipedal_tailed")
+*   )) %&gt;%
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;% 
+  mutate(body_style = fct_collapse(
+    body_style,
+    head = c("head_base", "head_only", "head_arms", "head_legs"),
+    bipedal = c("bipedal_tailless", "bipedal_tailed")
+    ),
+*   body_style = fct_lump(body_style, 3)) %&gt;%
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+
+.bottom-right[
+![](img/torracat.png)
+]
+
+---
+
+
+```r
+pokemon %&gt;%
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+```
+## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+* mutate(generation = factor(generation)) %&gt;%
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+  mutate(generation = factor(generation)) %&gt;%
+* mutate(generation = fct_reorder(generation, attack)) %&gt;%
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: exercise
+
+# Discuss
+
+How is `fct_infreq()` different from `fct_reorder()`?  
+
+How are they similar?
+
+.bottom-right[
+![](img/shinx.png)
+]
+
+---
+
+
+```r
+pokemon %&gt;%
+  count(generation, body_style)
+```
+
+```
+## # A tibble: 80 x 3
+##    generation body_style           n
+##         &lt;dbl&gt; &lt;chr&gt;            &lt;int&gt;
+##  1          1 bipedal_tailed      34
+##  2          1 bipedal_tailless    21
+##  3          1 four_wings           4
+##  4          1 head_arms            5
+##  5          1 head_base            7
+##  6          1 head_legs            7
+##  7          1 head_only            7
+##  8          1 insectoid            6
+##  9          1 multiple_bodies      4
+## 10          1 quadruped           25
+## # ... with 70 more rows
+```
+
+---
+
+
+```r
+pokemon %&gt;%
+  count(generation, body_style) %&gt;%
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+pokemon %&gt;%
+* mutate(generation = factor(generation)) %&gt;%
+  count(generation, body_style) %&gt;%
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
+```
+
+&lt;img src="factors_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

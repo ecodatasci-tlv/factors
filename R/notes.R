@@ -111,7 +111,7 @@ ggplot(poke2, aes(attack, sp_atk,
     facet_wrap(~ type_group, nrow = 2)
 
 pokemon
-m <- glm(legendary ~ attack + defense + speed,
+m <- glm(is_legendary ~ attack + defense + as.factor(generation),
     data = poke2,
     family = "binomial")
 summary(m)

@@ -17,11 +17,14 @@ output:
 library(knitr)
 library(tidyverse)
 options(htmltools.dir.version = FALSE,
-        tibble.width = 70)
+        tibble.width = 70,
+        ggplot2.continuous.colour = "viridis",
+        ggplot2.continuous.fill = "viridis")
 opts_chunk$set(
   fig.width = 6.5,
   fig.height = 4.5,
-  fig.align = "center"
+  fig.align = "center",
+  cache = TRUE
 )
 theme_set(theme_bw() +
             theme(text = element_text(size = 20))) 
@@ -41,23 +44,43 @@ eyes
 ```
 
 ---
+
 # Why care?
 
-It's easy to get tripped up by factors if you don't understand how they work
+By default, `stringsAsFactors = TRUE` when you use `read.csv()`
 
-**The "stealth factor":** `read.csv()` automatically converts all character columns to `factor` unless you specify `stringsAsFactors = FALSE`
+It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+---
+class: inverse, middle, center
+
+# Some examples
 
 ---
 
-[![](https://pbs.twimg.com/media/CL5lKZUUYAAWSR7.jpg)](https://twitter.com/JennyBryan/status/630052228624068609)
+## What you see is not what you get
+
+```{r}
+treatment <- c(50, 0, 50, 100)
+treatment
+```
+--
+```{r}
+treatment_f <- factor(treatment)
+treatment_f
+```
+--
+```{r}
+as.numeric(treatment_f)
+```
 
 ---
 
-background-image: url(img/numeric-factors.jpg)
-background-position: center
-background-size: auto 100% 
+class: middle, center
+
+# Factors are stored as _integers_
 
 ---
+## Let's take two data frames...
 
 ```{r echo = FALSE}
 library(tidyverse)
@@ -68,31 +91,77 @@ b <- tibble(name = c("Oren", "Erez"),
             drink = factor(c("coffee", "lemonade")))
 ```
 
+.pull-left[
 ```{r}
 a
 b
 ```
+]
 
 ---
 
+## R sometimes handles factor magic for you...
+
+.pull-left[
 ```{r}
-# handles factor magic for you
-rbind(a, b)
+a
+b
 ```
+]
+
+.pull-right[
+```{r}
+rbind(a, b) #<<
+```
+]
+---
+
+## Other times, it fails without warning
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+c(a$drink, b$drink) #<<
+```
+]
+---
+
+## The tidyverse is "lazy and surly" -- it reminds you to pay attention!
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+bind_rows(a, b) #<<
+```
+]
+---
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">10 years after convincing all scientists to switch to R: &quot;10% of genetics papers contain error due to stringsAsFactors&quot;</p>&mdash; Austin Richardson (@heyaudy) <a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw">August 30, 2016</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en" style="text-align: center;"><p lang="en" dir="ltr">I hope R&#39;s default stringsAsFactors=TRUE steps on a Lego.</p>&mdash; dr allison barner (@algaebarnacle) <a href="https://twitter.com/algaebarnacle/status/1088932294427996160?ref_src=twsrc%5Etfw">January 25, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">How do I hate thee stringsAsFactors = TRUE? Let me count the ways <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a></p>&mdash; Hadley Wickham (@hadleywickham) <a href="https://twitter.com/hadleywickham/status/624349074636976128?ref_src=twsrc%5Etfw">July 23, 2015</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ---
 
-```{r}
-# fails miserably
-c(a$drink, b$drink)
-```
+class: inverse, middle, center
 
----
+# Just remember:
 
-```{r}
-# reminds you to pay attention!
-bind_rows(a, b)
-```
+[![](img/hellno.jpg)](https://twitter.com/JennyBryan/status/630052228624068609)
 
 ---
 
@@ -175,7 +244,7 @@ pokemon %>%
 
 ```{r}
 pokemon %>%
-  mutate(generation = as.factor(generation)) %>% #<<
+  mutate(generation = factor(generation)) %>% #<<
   ggplot(aes(generation, attack)) +
   geom_boxplot()
 ```
@@ -184,7 +253,7 @@ pokemon %>%
 
 ```{r}
 pokemon %>%
-  mutate(generation = as.factor(generation)) %>%
+  mutate(generation = factor(generation)) %>%
   mutate(generation = fct_reorder(generation, attack)) %>% #<<
   ggplot(aes(generation, attack)) +
   geom_boxplot()
@@ -199,34 +268,23 @@ pokemon %>%
 
 ---
 
-Get ready for some balloon plots:
-
 ```{r}
-library(ggpubr)
-
-options(
-  ggplot2.continuous.color = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
+pokemon %>%
+  count(generation, body_style) %>%
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
 ```
 
 ---
 
 ```{r}
 pokemon %>%
+  mutate(generation = factor(generation)) %>% #<<
   count(generation, body_style) %>%
-  ggballoonplot(x = "generation", y = "body_style",
-                size = "n", fill = "n") 
-```
-
----
-
-```{r}
-pokemon %>%
-  mutate(generation = as.factor(generation)) %>% #<<
-  count(generation, body_style) %>%
-  ggballoonplot(x = "generation", y = "body_style",
-                size = "n", fill = "n")
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
 ```
 
 ---

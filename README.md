@@ -3,6 +3,8 @@
 
 # Using categorical variables in R
 
+[slides](https://ecodatasci-tlv.github.io/factors/#1)
+
 1.  Introduction to factors vs characters (Irene)
     1.  exercise
 2.  forcats + ggplot (exercise) + cool visualizations (Irene)

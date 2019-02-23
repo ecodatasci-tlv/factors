@@ -418,4 +418,102 @@ pokemon %>%
 
 ---
 
+class: middle, center
+
+# Statistics with factors
+
+---
+
+## Statistical tests that can be used when your predictor is factorial
+
+1. Chi-square
+2. Logistic regression
+3. Multinomial logistic regression
+
+---
+
+class: middle, center
+
+## Chi-square 
+
+Tests whether there is a different between the expected and the observed frequencies of one or more categories. 
+
+
+<sub> In other words, use it when your response and predictor are categorical <sub>
+---
+
+Example: Are flying pokemos are more legendary than expected by chance?
+
+```{r}
+#create a table that has the frequency of colors to types of pokemons
+chi_data<- table(pokemon$type_1,pokemon$color)
+chi_data
+#run the chi-square test
+a<- chisq.test(chi_data)
+a
+
+```
+
+
+---
+
+#####Now lets use the residuals to plot the chi-square data and findout how type is associated with color
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+if(!require("ggpubr")) install.packages("ggpubr")
+```
+
+```{r}
+res<- as.data.frame(a$residuals)
+ggballoonplot(res, size = "Freq",fill = "Freq")+
+  scale_fill_viridis_c(option = "D")
+```
+
+---
+
+class: exercise
+
+# Test whether "grass" egg group pokemons hatch into green adults more than expected by chance
+
+![](img/green_cat_small.png)
+---
+
+class: middle, center
+
+#Logistic regression
+
+A statistical test to study the relationship between a binary response and one or more continious predictors.
+
+At the center of the logistic regression analysis is the task estimating the log odds of an event.
+
+---
+
+##Test assumptions
+
+* The dependent variable should be dichotomous in nature
+* There should be no outliers in the data
+* here should be no high correlations (multicollinearity) among the predictors
+
+---
+
+## Important to remember
+
+* Logistic regression is sensative to overfitting - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+
+* Logistic regresion has a pseudo R-square - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
+
+---
+
+#Example:
+
+Question: Does pokemon becomes legendery with the in increase in speed, attack, and catch_rate abilities?
+---
+
+```{r}
+mylogit <- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
+summary(mylogit)
+```
+
+---
+
 

@@ -3,7 +3,7 @@
   <head>
     <title>Wrangling categorical variables in R</title>
     <meta charset="utf-8">
-    <meta name="date" content="2019-02-19" />
+    <meta name="date" content="2019-02-23" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
 ## EcoDataSci-TLV
-### 2019-02-19
+### 2019-02-23
 
 ---
 
@@ -328,16 +328,16 @@ pokemon
 ## # A tibble: 721 x 23
 ##    number name  type_1 type_2 total    hp attack defense sp_atk sp_def
 ##     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1      1 Bulb~ Grass  Poison   318    45     49      49     65     65
-##  2      2 Ivys~ Grass  Poison   405    60     62      63     80     80
-##  3      3 Venu~ Grass  Poison   525    80     82      83    100    100
-##  4      4 Char~ Fire   &lt;NA&gt;     309    39     52      43     60     50
-##  5      5 Char~ Fire   &lt;NA&gt;     405    58     64      58     80     65
-##  6      6 Char~ Fire   Flying   534    78     84      78    109     85
-##  7      7 Squi~ Water  &lt;NA&gt;     314    44     48      65     50     64
-##  8      8 Wart~ Water  &lt;NA&gt;     405    59     63      80     65     80
-##  9      9 Blas~ Water  &lt;NA&gt;     530    79     83     100     85    105
-## 10     10 Cate~ Bug    &lt;NA&gt;     195    45     30      35     20     20
+##  1      1 Bulb… Grass  Poison   318    45     49      49     65     65
+##  2      2 Ivys… Grass  Poison   405    60     62      63     80     80
+##  3      3 Venu… Grass  Poison   525    80     82      83    100    100
+##  4      4 Char… Fire   &lt;NA&gt;     309    39     52      43     60     50
+##  5      5 Char… Fire   &lt;NA&gt;     405    58     64      58     80     65
+##  6      6 Char… Fire   Flying   534    78     84      78    109     85
+##  7      7 Squi… Water  &lt;NA&gt;     314    44     48      65     50     64
+##  8      8 Wart… Water  &lt;NA&gt;     405    59     63      80     65     80
+##  9      9 Blas… Water  &lt;NA&gt;     530    79     83     100     85    105
+## 10     10 Cate… Bug    &lt;NA&gt;     195    45     30      35     20     20
 ## # ... with 711 more rows, and 13 more variables: speed &lt;dbl&gt;,
 ## #   generation &lt;dbl&gt;, is_legendary &lt;lgl&gt;, color &lt;chr&gt;,
 ## #   has_gender &lt;lgl&gt;, pr_male &lt;dbl&gt;, egg_group_1 &lt;chr&gt;,
@@ -613,6 +613,182 @@ pokemon %&gt;%
 ```
 
 &lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle, center
+
+# Statistics with factors
+
+---
+
+## Statistical tests that can be used when your predictor is factorial
+
+1. Chi-square
+2. Logistic regression
+3. Multinomial logistic regression
+
+---
+
+class: middle, center
+
+## Chi-square 
+
+Tests whether there is a different between the expected and the observed frequencies of one or more categories. 
+
+
+&lt;sub&gt; In other words, use it when your response and predictor are categorical &lt;sub&gt;
+---
+
+Example: Are flying pokemos are more legendary than expected by chance?
+
+
+```r
+#create a table that has the frequency of colors to types of pokemons
+chi_data&lt;- table(pokemon$type_1,pokemon$color)
+chi_data
+```
+
+```
+##           
+##            Black Blue Brown Green Grey Pink Purple Red White Yellow
+##   Bug          3    4     3     7    8    0      6  16     4     12
+##   Dark         8    5     2     0    4    0      3   4     1      1
+##   Dragon       1    9     1     4    1    0      3   2     2      1
+##   Electric     2    6     0     1    3    1      0   3     4     16
+##   Fairy        0    1     0     0    0    7      1   0     8      0
+##   Fighting     0    4     6     1    6    0      2   2     2      2
+##   Fire         0    0    12     0    0    0      0  27     0      8
+##   Flying       0    0     0     1    0    0      2   0     0      0
+##   Ghost        9    0     4     0    0    0      8   0     1      1
+##   Grass        0    5     6    41    3    4      0   1     3      3
+##   Ground       1    1    12     4    6    0      2   2     0      2
+##   Ice          0   10     3     0    2    1      0   2     5      0
+##   Normal       3    6    37     1   10   13      5   4     9      5
+##   Poison       1    5     2     3    0    0     17   0     0      0
+##   Psychic      3    6     4     6    2    6      7   1     6      6
+##   Rock         0    9    11     3   10    1      2   2     0      3
+##   Steel        1    4     3     2   10    0      0   0     1      1
+##   Water        0   59     4     5    4    8      7   9     6      3
+```
+
+```r
+#run the chi-square test
+a&lt;- chisq.test(chi_data)
+```
+
+```
+## Warning in chisq.test(chi_data): Chi-squared approximation may be incorrect
+```
+
+```r
+a
+```
+
+```
+## 
+## 	Pearson's Chi-squared test
+## 
+## data:  chi_data
+## X-squared = 1072.1, df = 153, p-value &lt; 2.2e-16
+```
+
+
+---
+
+#####Now lets use the residuals to plot the chi-square data and findout how type is associated with color
+
+
+
+```r
+res&lt;- as.data.frame(a$residuals)
+ggballoonplot(res, size = "Freq",fill = "Freq")+
+  scale_fill_viridis_c(option = "D")
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: exercise
+
+# Test whether "grass" egg group pokemons hatch into green adults more than expected by chance
+
+![](img/green_cat_small.png)
+---
+
+class: middle, center
+
+#Logistic regression
+
+A statistical test to study the relationship between a binary response and one or more continious predictors.
+
+At the center of the logistic regression analysis is the task estimating the log odds of an event.
+
+---
+
+##Test assumptions
+
+* The dependent variable should be dichotomous in nature
+* There should be no outliers in the data
+* here should be no high correlations (multicollinearity) among the predictors
+
+---
+
+## Important to remember
+
+* Logistic regression is sensative to overfitting - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+
+* Logistic regresion has a pseudo R-square - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
+
+---
+
+#Example:
+
+Question: Does pokemon becomes legendery with the in increase in speed, attack, and catch_rate abilities?
+---
+
+
+```r
+mylogit &lt;- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```r
+summary(mylogit)
+```
+
+```
+## 
+## Call:
+## glm(formula = is_legendary ~ speed + attack + catch_rate, family = "binomial", 
+##     data = pokemon)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -2.42791  -0.06481  -0.00688   0.00000   2.84786  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -4.74204    1.76647  -2.684  0.00726 ** 
+## speed        0.03038    0.01437   2.114  0.03454 *  
+## attack       0.04221    0.01427   2.958  0.00310 ** 
+## catch_rate  -0.14565    0.01941  -7.504 6.17e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 342.184  on 720  degrees of freedom
+## Residual deviance:  73.909  on 717  degrees of freedom
+## AIC: 81.909
+## 
+## Number of Fisher Scoring iterations: 10
+```
 
 ---
     </textarea>

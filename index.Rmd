@@ -1,0 +1,421 @@
+---
+title: "Wrangling categorical variables in R"
+subtitle: "EcoDataSci-TLV"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "custom-fonts.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      ratio: '16:9'
+      beforeInit: "https://platform.twitter.com/widgets.js"
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+conflicted::conflict_prefer("filter", "dplyr")
+
+options(htmltools.dir.version = FALSE,
+        tibble.width = 70,
+        ggplot2.continuous.colour = "viridis",
+        ggplot2.continuous.fill = "viridis")
+opts_chunk$set(
+  fig.width = 6.5,
+  fig.height = 4.5,
+  fig.align = "center",
+  cache = TRUE
+)
+theme_set(theme_minimal() +
+            theme(text = element_text(size = 20))) 
+```
+
+# What are factors?
+
+R's representation of categorical variable. Consists of:
+
+1. A set of values
+2. An ordered set of valid levels
+
+```{r}
+eyes <- factor(c("blue", "green", "green"),
+               levels = c("blue", "brown", "green"))
+eyes
+```
+
+---
+
+# Why care?
+
+By default, `stringsAsFactors = TRUE` when you use `read.csv()`
+
+It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+---
+class: inverse, middle, center
+
+# Some examples
+
+---
+
+# What you see is NOT what you get
+
+```{r}
+treatment <- c(50, 0, 50, 100)
+treatment
+```
+--
+```{r}
+treatment_f <- factor(treatment)
+treatment_f
+```
+--
+```{r}
+as.numeric(treatment_f)
+```
+
+---
+
+class: middle, center
+
+# Factors are stored as _integers_
+
+---
+# Let's take two data frames...
+
+```{r echo = FALSE}
+library(tidyverse)
+a <- tibble(name = c("Alon", "Ela", "Shaked"),
+            drink = factor(c("coffee", "beer", "beer")))
+
+b <- tibble(name = c("Oren", "Erez"),
+            drink = factor(c("coffee", "lemonade")))
+```
+
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+---
+
+# R sometimes handles factor magic for you...
+
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+rbind(a, b) #<<
+```
+]
+---
+
+# Other times, it fails without warning
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+c(a$drink, b$drink) #<<
+```
+]
+---
+
+# The tidyverse reminds you to pay attention to types!
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+bind_rows(a, b) #<<
+```
+]
+---
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">10 years after convincing all scientists to switch to R: &quot;10% of genetics papers contain error due to stringsAsFactors&quot;</p>&mdash; Austin Richardson (@heyaudy) <a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw">August 30, 2016</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en" style="text-align: center;"><p lang="en" dir="ltr">I hope R&#39;s default stringsAsFactors=TRUE steps on a Lego.</p>&mdash; dr allison barner (@algaebarnacle) <a href="https://twitter.com/algaebarnacle/status/1088932294427996160?ref_src=twsrc%5Etfw">January 25, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">How do I hate thee stringsAsFactors = TRUE? Let me count the ways <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a></p>&mdash; Hadley Wickham (@hadleywickham) <a href="https://twitter.com/hadleywickham/status/624349074636976128?ref_src=twsrc%5Etfw">July 23, 2015</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+---
+
+class: inverse, middle, center
+
+# Just remember:
+
+[![](img/hellno.jpg)](https://twitter.com/JennyBryan/status/630052228624068609)
+
+---
+
+class: center, middle
+
+![](https://github.com/tidyverse/forcats/blob/master/man/figures/logo.png?raw=true)
+
+```{r}
+library(tidyverse)
+
+# or if you only want to load forcats:
+# library(forcats)
+```
+
+---
+
+class: center, middle
+
+![](img/poke-forcats.png)
+```{r message = FALSE}
+pokemon <- read_csv("data/pokemon.csv")
+```
+
+---
+
+```{r}
+pokemon
+```
+
+---
+class: exercise
+
+# Exercise
+
+How many types of pokemon are there?
+
+How many body styles do they have?
+
+.bottom-right[
+![](img/meowth.png)
+]
+
+---
+Let's get graphing!
+
+```{r eval = FALSE}
+theme_set(theme_minimal()) # change the default theme
+
+options(ggplot2.continuous.colour = "viridis", # change the default colors
+        ggplot2.continuous.fill = "viridis"))
+```
+
+.center[
+![](https://media.giphy.com/media/1NLZYcJGLM9mo/giphy.gif)
+]
+---
+exclude: true
+
+```{r}
+ggplot(pokemon, aes(weight_kg, height_m)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(.~ body_style)
+```
+
+---
+
+```{r}
+pokemon %>%
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(type_1 = fct_infreq(type_1)) %>% #<<
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(type_1 = fct_infreq(type_1),
+         type_1 = fct_rev(type_1)) %>% #<<
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(type_1 = fct_infreq(type_1),
+         type_1 = fct_rev(type_1),
+         type_1 = fct_relevel(type_1, "Normal")) %>% #<<
+  ggplot(aes(type_1)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+```{r echo = FALSE}
+pokemon %>% 
+  filter(!is.na(type_2)) %>% 
+  mutate(type_2 = fct_infreq(type_2) %>% fct_rev()) %>% 
+  ggplot(aes(type_2)) +
+  geom_bar() + coord_flip()
+```
+
+.bottom-right[
+![](img/purugly.png)
+]
+
+---
+
+```{r}
+pokemon %>% 
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>% 
+  mutate(body_style = fct_collapse( #<<
+    body_style, #<<
+    head = c("head_base", "head_only", "head_arms", "head_legs"), #<<
+    bipedal = c("bipedal_tailless", "bipedal_tailed") #<<
+    )) %>% #<<
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+```{r}
+pokemon %>% 
+  mutate(body_style = fct_collapse(
+    body_style,
+    head = c("head_base", "head_only", "head_arms", "head_legs"),
+    bipedal = c("bipedal_tailless", "bipedal_tailed")
+    ),
+    body_style = fct_lump(body_style, 3)) %>% #<<
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+---
+
+class: exercise
+
+# Exercise
+
+How do you make this graph?
+
+```{r echo = FALSE}
+pokemon %>% 
+  mutate(body_style = fct_collapse(
+    body_style,
+    wings = c("two_wings", "four_wings")
+  ) %>% 
+    fct_lump(4) %>% 
+    fct_infreq()) %>% 
+  ggplot(aes(body_style)) +
+  geom_bar() + coord_flip()
+```
+
+.bottom-right[
+![](img/torracat.png)
+]
+
+---
+
+```{r}
+pokemon %>%
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(generation = factor(generation)) %>% #<<
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(generation = factor(generation)) %>%
+  mutate(generation = fct_reorder(generation, attack)) %>% #<<
+  ggplot(aes(generation, attack)) +
+  geom_boxplot()
+```
+
+---
+
+class: exercise
+
+# Discuss
+
+How is `fct_infreq()` different from `fct_reorder()`?  
+
+How are they similar?
+
+.bottom-right[
+![](img/shinx.png)
+]
+
+---
+
+```{r}
+pokemon %>%
+  count(generation, body_style)
+```
+
+---
+
+```{r}
+pokemon %>%
+  count(generation, body_style) %>%
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
+```
+
+---
+
+```{r}
+pokemon %>%
+  mutate(generation = factor(generation)) %>% #<<
+  count(generation, body_style) %>%
+  ggplot(aes(generation, body_style,
+             size = n, color = n)) +
+  geom_point()
+```
+
+---
+
+

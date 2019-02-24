@@ -128,6 +128,27 @@ b
 
 .pull-right[
 ```{r}
+a$drink
+b$drink
+```
+
+]
+---
+# Other times, it fails without warning
+.pull-left[
+```{r}
+a
+b
+```
+]
+
+.pull-right[
+```{r}
+a$drink
+b$drink
+```
+
+```{r}
 c(a$drink, b$drink) #<<
 ```
 ]
@@ -520,14 +541,14 @@ A solution: present the results of a goodness of fit test such as Hosmer-Lemesho
 
 # Example:
 
-Question: Does pokemon becomes legendery with the in increase in `speed`, `attack`, and `catch_rate` abilities?
+Question: Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
 ---
-
-```{r}
+.small[
+```{r warning = FALSE}
 mylogit <- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
 summary(mylogit)
 ```
-
+]
 ---
 
 

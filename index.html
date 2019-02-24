@@ -3,7 +3,7 @@
   <head>
     <title>Wrangling categorical variables in R</title>
     <meta charset="utf-8">
-    <meta name="date" content="2019-02-23" />
+    <meta name="date" content="2019-02-24" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
 ## EcoDataSci-TLV
-### 2019-02-23
+### 2019-02-24
 
 ---
 
@@ -207,6 +207,76 @@ b
 .pull-right[
 
 ```r
+a$drink
+```
+
+```
+## [1] coffee beer   beer  
+## Levels: beer coffee
+```
+
+```r
+b$drink
+```
+
+```
+## [1] coffee   lemonade
+## Levels: coffee lemonade
+```
+
+]
+---
+# Other times, it fails without warning
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  coffee  
+## 2 Erez  lemonade
+```
+]
+
+.pull-right[
+
+```r
+a$drink
+```
+
+```
+## [1] coffee beer   beer  
+## Levels: beer coffee
+```
+
+```r
+b$drink
+```
+
+```
+## [1] coffee   lemonade
+## Levels: coffee lemonade
+```
+
+
+```r
 *c(a$drink, b$drink)
 ```
 
@@ -309,6 +379,19 @@ library(tidyverse)
 
 ---
 
+# forcats overview
+
+* `fct_infreq()`: reorder a factor by the frequency of values
+* `fct_rev()`: reverse the order of factors
+* `fct_relevel()`: change the order of a factor by hand
+* `fct_collapse()`: collapse factor levels into manually defined groups
+* `fct_lump()`: collapse the least/most frequent values of a factor into "other"
+* `fct_reorder()`: reorder a factor by another variable
+
+Source: https://forcats.tidyverse.org/
+
+---
+
 class: center, middle
 
 ![](img/poke-forcats.png)
@@ -328,16 +411,16 @@ pokemon
 ## # A tibble: 721 x 23
 ##    number name  type_1 type_2 total    hp attack defense sp_atk sp_def
 ##     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1      1 Bulb… Grass  Poison   318    45     49      49     65     65
-##  2      2 Ivys… Grass  Poison   405    60     62      63     80     80
-##  3      3 Venu… Grass  Poison   525    80     82      83    100    100
-##  4      4 Char… Fire   &lt;NA&gt;     309    39     52      43     60     50
-##  5      5 Char… Fire   &lt;NA&gt;     405    58     64      58     80     65
-##  6      6 Char… Fire   Flying   534    78     84      78    109     85
-##  7      7 Squi… Water  &lt;NA&gt;     314    44     48      65     50     64
-##  8      8 Wart… Water  &lt;NA&gt;     405    59     63      80     65     80
-##  9      9 Blas… Water  &lt;NA&gt;     530    79     83     100     85    105
-## 10     10 Cate… Bug    &lt;NA&gt;     195    45     30      35     20     20
+##  1      1 Bulb~ Grass  Poison   318    45     49      49     65     65
+##  2      2 Ivys~ Grass  Poison   405    60     62      63     80     80
+##  3      3 Venu~ Grass  Poison   525    80     82      83    100    100
+##  4      4 Char~ Fire   &lt;NA&gt;     309    39     52      43     60     50
+##  5      5 Char~ Fire   &lt;NA&gt;     405    58     64      58     80     65
+##  6      6 Char~ Fire   Flying   534    78     84      78    109     85
+##  7      7 Squi~ Water  &lt;NA&gt;     314    44     48      65     50     64
+##  8      8 Wart~ Water  &lt;NA&gt;     405    59     63      80     65     80
+##  9      9 Blas~ Water  &lt;NA&gt;     530    79     83     100     85    105
+## 10     10 Cate~ Bug    &lt;NA&gt;     195    45     30      35     20     20
 ## # ... with 711 more rows, and 13 more variables: speed &lt;dbl&gt;,
 ## #   generation &lt;dbl&gt;, is_legendary &lt;lgl&gt;, color &lt;chr&gt;,
 ## #   has_gender &lt;lgl&gt;, pr_male &lt;dbl&gt;, egg_group_1 &lt;chr&gt;,
@@ -384,7 +467,7 @@ ggplot(pokemon, aes(weight_kg, height_m)) +
   facet_wrap(.~ body_style)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -395,7 +478,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -407,7 +490,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -420,7 +503,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -434,7 +517,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -444,7 +527,7 @@ class: exercise
 
 How do you make this graph?
 
-&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/exercise-2-1.png" style="display: block; margin: auto;" /&gt;
 
 .bottom-right[
 ![](img/purugly.png)
@@ -459,7 +542,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -475,7 +558,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -492,7 +575,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -502,7 +585,7 @@ class: exercise
 
 How do you make this graph?
 
-&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/exercise-3-1.png" style="display: block; margin: auto;" /&gt;
 
 .bottom-right[
 ![](img/torracat.png)
@@ -521,7 +604,7 @@ pokemon %&gt;%
 ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -533,7 +616,7 @@ pokemon %&gt;%
   geom_boxplot()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -546,7 +629,7 @@ pokemon %&gt;%
   geom_boxplot()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -598,7 +681,7 @@ pokemon %&gt;%
   geom_point()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -612,11 +695,11 @@ pokemon %&gt;%
   geom_point()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
-class: middle, center
+class: middle, center, inverse
 
 # Statistics with factors
 
@@ -640,12 +723,12 @@ Tests whether there is a different between the expected and the observed frequen
 &lt;sub&gt; In other words, use it when your response and predictor are categorical &lt;sub&gt;
 ---
 
-Example: Are flying pokemos are more legendary than expected by chance?
+Example: Are flying pokemons are more legendary than expected by chance?
 
 
 ```r
 #create a table that has the frequency of colors to types of pokemons
-chi_data&lt;- table(pokemon$type_1,pokemon$color)
+chi_data &lt;- table(pokemon$type_1,pokemon$color)
 chi_data
 ```
 
@@ -674,7 +757,7 @@ chi_data
 
 ```r
 #run the chi-square test
-a&lt;- chisq.test(chi_data)
+a &lt;- chisq.test(chi_data)
 ```
 
 ```
@@ -693,20 +776,21 @@ a
 ## X-squared = 1072.1, df = 153, p-value &lt; 2.2e-16
 ```
 
-
 ---
 
-#####Now lets use the residuals to plot the chi-square data and findout how type is associated with color
+##### Now lets use the residuals to plot the chi-square data and findout how type is associated with color
 
 
 
 ```r
-res&lt;- as.data.frame(a$residuals)
+library(ggpubr)
+
+res &lt;- as.data.frame(a$residuals)
 ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -719,7 +803,7 @@ class: exercise
 
 class: middle, center
 
-#Logistic regression
+# Logistic regression
 
 A statistical test to study the relationship between a binary response and one or more continious predictors.
 
@@ -727,7 +811,7 @@ At the center of the logistic regression analysis is the task estimating the log
 
 ---
 
-##Test assumptions
+## Test assumptions
 
 * The dependent variable should be dichotomous in nature
 * There should be no outliers in the data
@@ -737,28 +821,21 @@ At the center of the logistic regression analysis is the task estimating the log
 
 ## Important to remember
 
-* Logistic regression is sensative to overfitting - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+* _Logistic regression is sensative to overfitting_ - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
 
-* Logistic regresion has a pseudo R-square - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+* _Logistic regresion has a pseudo R-square_ - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
 A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
 
 ---
 
-#Example:
+# Example:
 
-Question: Does pokemon becomes legendery with the in increase in speed, attack, and catch_rate abilities?
+Question: Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
 ---
-
+.small[
 
 ```r
 mylogit &lt;- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```r
 summary(mylogit)
 ```
 
@@ -789,7 +866,7 @@ summary(mylogit)
 ## 
 ## Number of Fisher Scoring iterations: 10
 ```
-
+]
 ---
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

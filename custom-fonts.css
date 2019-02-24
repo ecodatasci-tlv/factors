@@ -22,6 +22,10 @@
     font-size: 150%;
 }
 
+.small {
+    font-size: 80%;
+}
+
 .remark-code, .remark-inline-code {
     font-family: 'Inconsolata', 'Source Code Pro', 'Lucida Console', Monaco, monospace;
     font-size: 80%;

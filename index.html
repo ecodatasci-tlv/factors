@@ -3,7 +3,7 @@
   <head>
     <title>Wrangling categorical variables in R</title>
     <meta charset="utf-8">
-    <meta name="date" content="2019-02-24" />
+    <meta name="date" content="2019-02-25" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
 ## EcoDataSci-TLV
-### 2019-02-24
+### 2019-02-25
 
 ---
 
@@ -39,13 +39,6 @@ eyes
 ## Levels: blue brown green
 ```
 
----
-
-# Why care?
-
-By default, `stringsAsFactors = TRUE` when you use `read.csv()`
-
-It's easy to get tripped up by factors if you don't understand how they work...or even if you do
 ---
 class: inverse, middle, center
 
@@ -346,6 +339,13 @@ b
 ]
 ---
 
+# Why care?
+
+By default, `stringsAsFactors = TRUE` when you use `read.csv()`
+
+It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+---
+
 &lt;blockquote class="twitter-tweet tw-align-center" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;10 years after convincing all scientists to switch to R: &amp;quot;10% of genetics papers contain error due to stringsAsFactors&amp;quot;&lt;/p&gt;&amp;mdash; Austin Richardson (@heyaudy) &lt;a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw"&gt;August 30, 2016&lt;/a&gt;&lt;/blockquote&gt;
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
 
@@ -393,8 +393,12 @@ Source: https://forcats.tidyverse.org/
 ---
 
 class: center, middle
+background-image: url(img/forpoke_with_ball.png)
+background-position: center
+background-size: auto 80%
 
-![](img/poke-forcats.png)
+---
+
 
 ```r
 pokemon &lt;- read_csv("data/pokemon.csv")
@@ -705,7 +709,7 @@ class: middle, center, inverse
 
 ---
 
-## Statistical tests that can be used when your predictor is factorial
+## Statistical tests that can be used when your response is categorical
 
 1. Chi-square
 2. Logistic regression
@@ -719,12 +723,22 @@ class: middle, center
 
 Tests whether there is a different between the expected and the observed frequencies of one or more categories. 
 
+.small[
+In other words, use it when your response and predictor are categorical
+]
 
-&lt;sub&gt; In other words, use it when your response and predictor are categorical &lt;sub&gt;
 ---
 
-Example: Are flying pokemons are more legendary than expected by chance?
+# Example: 
 
+Are electric pokemons are more yellow than expected by chance?
+
+.center[
+![](img/pikachu.jpg)
+]
+---
+
+.small[
 
 ```r
 #create a table that has the frequency of colors to types of pokemons
@@ -754,10 +768,13 @@ chi_data
 ##   Steel        1    4     3     2   10    0      0   0     1      1
 ##   Water        0   59     4     5    4    8      7   9     6      3
 ```
+]
+---
+
 
 ```r
 #run the chi-square test
-a &lt;- chisq.test(chi_data)
+chi_test &lt;- chisq.test(chi_data)
 ```
 
 ```
@@ -765,7 +782,7 @@ a &lt;- chisq.test(chi_data)
 ```
 
 ```r
-a
+chi_test
 ```
 
 ```
@@ -778,25 +795,23 @@ a
 
 ---
 
-##### Now lets use the residuals to plot the chi-square data and findout how type is associated with color
+##### Let's plot the chi-square residuals and find out how type is associated with color
 
 
 
 ```r
-library(ggpubr)
-
-res &lt;- as.data.frame(a$residuals)
-ggballoonplot(res, size = "Freq",fill = "Freq")+
+res &lt;- as.data.frame(chi_test$residuals)
+ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-37-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 class: exercise
 
-# Test whether "grass" egg group pokemons hatch into green adults more than expected by chance
+# Test whether `grass` egg group pokemons hatch into green adults more than expected by chance
 
 ![](img/green_cat_small.png)
 ---
@@ -830,7 +845,8 @@ A solution: present the results of a goodness of fit test such as Hosmer-Lemesho
 
 # Example:
 
-Question: Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
+Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
+
 ---
 .small[
 

@@ -26,6 +26,11 @@
     font-size: 80%;
 }
 
+.img-small img {
+    width: 50%;
+    height: auto;
+}
+
 .remark-code, .remark-inline-code {
     font-family: 'Inconsolata', 'Source Code Pro', 'Lucida Console', Monaco, monospace;
     font-size: 80%;

@@ -279,7 +279,7 @@ Source: https://forcats.tidyverse.org/
 ---
 
 class: center, middle
-background-image: url(img/forpoke_with_ball.png)
+background-image: url(img/forpoke_with_ball_real.png)
 background-position: center
 background-size: auto 80%
 
@@ -614,9 +614,9 @@ At the center of the logistic regression analysis is the task estimating the log
 
 ## Important to remember
 
-* _Logistic regression is sensative to overfitting_ - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+* *Logistic regression is sensative to overfitting* - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
 
-* _Logistic regresion has a pseudo R-square_ - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+* *Logistic regresion has a pseudo R-square* - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
 A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
 
 ---
@@ -633,5 +633,47 @@ summary(mylogit)
 ```
 ]
 ---
+
+class: exercise
+##Exercise
+
+Run a logistic regression to see if a pokemon's chance for mega evolution grows with its height, weight, and defense abilities
+
+
+.bottom-right[
+![](img/250px-335Zangoose.png)
+]
+---
+## Multinomial Logistic Regression
+
+* Used to explain the relationship between one nominal dependent variable and one or more independent variables.
+* For a nominal dependent variable with k categories, the multinomial regression model estimates k-1 logit equations
+* Multinomial regression is similar to discriminant analysis. The latter should be used if the predictors are normaly distributed.
+
+Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normaly distributed.
+
+
+---
+
+## Example:
+We want to know how pokemons' defense, attack, and speed abilities associated with its type 
+
+---
+.small[
+```{r message=FALSE, warning=FALSE, include=FALSE}
+if(!require("nnet")) install.packages("nnet")
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(nnet)
+multi_test <- multinom(type_1 ~ defense + attack + speed, data = pokemon)
+```
+]
+---
+.small[
+```{r}
+summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+```
+]
 
 

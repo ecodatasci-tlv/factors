@@ -12,7 +12,7 @@
 class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
-## EcoDataSci-TLV
+## <a href="https://ecodatasci-tlv.github.io/factors/" class="uri">https://ecodatasci-tlv.github.io/factors/</a>
 ### 2019-02-25
 
 ---
@@ -24,8 +24,10 @@ class: center, middle, inverse, title-slide
 
 R's representation of categorical variable. Consists of:
 
-1. A set of values
-2. An ordered set of valid levels
+1. A set of _values_
+2. An ordered set of valid _levels_
+
+--
 
 
 ```r
@@ -50,8 +52,7 @@ class: inverse, middle, center
 
 
 ```r
-treatment &lt;- c(50, 0, 50, 100)
-treatment
+(treatment &lt;- c(50, 0, 50, 100))
 ```
 
 ```
@@ -60,8 +61,7 @@ treatment
 --
 
 ```r
-treatment_f &lt;- factor(treatment)
-treatment_f
+(treatment_f &lt;- factor(treatment))
 ```
 
 ```
@@ -83,6 +83,93 @@ as.numeric(treatment_f)
 class: middle, center
 
 # Factors are stored as _integers_
+
+---
+
+class: middle
+
+.center[
+.img-small[
+![](img/pixabay-bottles.png)
+]]
+
+
+```r
+(drinks_a &lt;- factor(c("coffee", "beer", "beer")))
+```
+
+```
+## [1] coffee beer   beer  
+## Levels: beer coffee
+```
+
+```r
+(drinks_b &lt;- factor(c("lemonade", "coffee")))
+```
+
+```
+## [1] lemonade coffee  
+## Levels: coffee lemonade
+```
+
+---
+
+class: center, middle
+
+# Factor levels are _alphabetical_ by default
+
+.img-small[
+![](https://media.giphy.com/media/l3vQZT84QqVUKUWE8/giphy.gif)
+]
+
+---
+
+# Predict the output
+
+
+```r
+drinks_a &lt;- factor(c("coffee", "beer", "beer"))
+drinks_b &lt;- factor(c("lemonade", "coffee"))
+
+*c(drinks_a, drinks_b)
+```
+--
+
+```
+## [1] 2 1 1 2 1
+```
+--
+
+
+```r
+*c(drinks_a, "tea")
+```
+--
+
+```
+## [1] "2"   "1"   "1"   "tea"
+```
+
+--
+
+
+```r
+*as.numeric(c(drinks_a, "tea"))
+```
+--
+
+```
+## Warning: NAs introduced by coercion
+```
+
+```
+## [1]  2  1  1 NA
+```
+
+---
+class: center, middle
+
+![](https://media.giphy.com/media/bw5OY9zTKlOHS/giphy.gif)
 
 ---
 # Let's take two data frames...
@@ -112,15 +199,15 @@ b
 ## # A tibble: 2 x 2
 ##   name  drink   
 ##   &lt;chr&gt; &lt;fct&gt;   
-## 1 Oren  coffee  
-## 2 Erez  lemonade
+## 1 Oren  lemonade
+## 2 Erez  coffee
 ```
 ]
 
+
 ---
 
-# R sometimes handles factor magic for you...
-
+# We now know that this will fail
 .pull-left[
 
 ```r
@@ -146,6 +233,68 @@ b
 ##   &lt;chr&gt; &lt;fct&gt;   
 ## 1 Oren  coffee  
 ## 2 Erez  lemonade
+```
+]
+
+.pull-right[
+
+```r
+a$drink
+```
+
+```
+## [1] coffee beer   beer  
+## Levels: beer coffee
+```
+
+```r
+b$drink
+```
+
+```
+## [1] lemonade coffee  
+## Levels: coffee lemonade
+```
+
+
+```r
+*c(a$drink, b$drink)
+```
+
+```
+## [1] 2 1 1 2 1
+```
+]
+
+---
+
+# But sometimes, R handles factor magic for you...
+
+.pull-left[
+
+```r
+a
+```
+
+```
+## # A tibble: 3 x 2
+##   name   drink 
+##   &lt;chr&gt;  &lt;fct&gt; 
+## 1 Alon   coffee
+## 2 Ela    beer  
+## 3 Shaked beer
+```
+
+```r
+b
+```
+
+```
+## # A tibble: 2 x 2
+##   name  drink   
+##   &lt;chr&gt; &lt;fct&gt;   
+## 1 Oren  lemonade
+## 2 Erez  coffee
 ```
 ]
 
@@ -162,121 +311,11 @@ b
 ## 1 Alon   coffee  
 ## 2 Ela    beer    
 ## 3 Shaked beer    
-## 4 Oren   coffee  
-## 5 Erez   lemonade
-```
-]
----
-
-# Other times, it fails without warning
-.pull-left[
-
-```r
-a
-```
-
-```
-## # A tibble: 3 x 2
-##   name   drink 
-##   &lt;chr&gt;  &lt;fct&gt; 
-## 1 Alon   coffee
-## 2 Ela    beer  
-## 3 Shaked beer
-```
-
-```r
-b
-```
-
-```
-## # A tibble: 2 x 2
-##   name  drink   
-##   &lt;chr&gt; &lt;fct&gt;   
-## 1 Oren  coffee  
-## 2 Erez  lemonade
+## 4 Oren   lemonade
+## 5 Erez   coffee
 ```
 ]
 
-.pull-right[
-
-```r
-a$drink
-```
-
-```
-## [1] coffee beer   beer  
-## Levels: beer coffee
-```
-
-```r
-b$drink
-```
-
-```
-## [1] coffee   lemonade
-## Levels: coffee lemonade
-```
-
-]
----
-# Other times, it fails without warning
-.pull-left[
-
-```r
-a
-```
-
-```
-## # A tibble: 3 x 2
-##   name   drink 
-##   &lt;chr&gt;  &lt;fct&gt; 
-## 1 Alon   coffee
-## 2 Ela    beer  
-## 3 Shaked beer
-```
-
-```r
-b
-```
-
-```
-## # A tibble: 2 x 2
-##   name  drink   
-##   &lt;chr&gt; &lt;fct&gt;   
-## 1 Oren  coffee  
-## 2 Erez  lemonade
-```
-]
-
-.pull-right[
-
-```r
-a$drink
-```
-
-```
-## [1] coffee beer   beer  
-## Levels: beer coffee
-```
-
-```r
-b$drink
-```
-
-```
-## [1] coffee   lemonade
-## Levels: coffee lemonade
-```
-
-
-```r
-*c(a$drink, b$drink)
-```
-
-```
-## [1] 2 1 1 1 2
-```
-]
 ---
 
 # The tidyverse reminds you to pay attention to types!
@@ -303,8 +342,8 @@ b
 ## # A tibble: 2 x 2
 ##   name  drink   
 ##   &lt;chr&gt; &lt;fct&gt;   
-## 1 Oren  coffee  
-## 2 Erez  lemonade
+## 1 Oren  lemonade
+## 2 Erez  coffee
 ```
 ]
 
@@ -333,17 +372,33 @@ b
 ## 1 Alon   coffee  
 ## 2 Ela    beer    
 ## 3 Shaked beer    
-## 4 Oren   coffee  
-## 5 Erez   lemonade
+## 4 Oren   lemonade
+## 5 Erez   coffee
 ```
 ]
+
+---
+
+class: center, middle
+
+![](https://media.giphy.com/media/fQGf2FTKayOnKjwidV/giphy.gif)
 ---
 
 # Why care?
 
 By default, `stringsAsFactors = TRUE` when you use `read.csv()`
 
-It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+Be aware when you:
+
+- try to combine (`c()`) factors
+- try to convert to numeric
+
+--
+
+Better practice: Use `stringsAsFactors = FALSE` or `read_csv`. 
+
+**Only use factors when YOU decide it's useful**
+
 ---
 
 &lt;blockquote class="twitter-tweet tw-align-center" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;10 years after convincing all scientists to switch to R: &amp;quot;10% of genetics papers contain error due to stringsAsFactors&amp;quot;&lt;/p&gt;&amp;mdash; Austin Richardson (@heyaudy) &lt;a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw"&gt;August 30, 2016&lt;/a&gt;&lt;/blockquote&gt;
@@ -358,8 +413,6 @@ It's easy to get tripped up by factors if you don't understand how they work...o
 ---
 
 class: inverse, middle, center
-
-# Just remember:
 
 [![](img/hellno.jpg)](https://twitter.com/JennyBryan/status/630052228624068609)
 
@@ -393,7 +446,7 @@ Source: https://forcats.tidyverse.org/
 ---
 
 class: center, middle
-background-image: url(img/forpoke_with_ball.png)
+background-image: url(img/forpoke_with_ball_real.png)
 background-position: center
 background-size: auto 80%
 
@@ -401,6 +454,7 @@ background-size: auto 80%
 
 
 ```r
+# usethis::use_course("http://bit.ly/ecodata-factors-ex")
 pokemon &lt;- read_csv("data/pokemon.csv")
 ```
 
@@ -408,6 +462,7 @@ pokemon &lt;- read_csv("data/pokemon.csv")
 
 
 ```r
+# usethis::use_course("http://bit.ly/ecodata-factors-ex")
 pokemon
 ```
 
@@ -415,16 +470,16 @@ pokemon
 ## # A tibble: 721 x 23
 ##    number name  type_1 type_2 total    hp attack defense sp_atk sp_def
 ##     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1      1 Bulb~ Grass  Poison   318    45     49      49     65     65
-##  2      2 Ivys~ Grass  Poison   405    60     62      63     80     80
-##  3      3 Venu~ Grass  Poison   525    80     82      83    100    100
-##  4      4 Char~ Fire   &lt;NA&gt;     309    39     52      43     60     50
-##  5      5 Char~ Fire   &lt;NA&gt;     405    58     64      58     80     65
-##  6      6 Char~ Fire   Flying   534    78     84      78    109     85
-##  7      7 Squi~ Water  &lt;NA&gt;     314    44     48      65     50     64
-##  8      8 Wart~ Water  &lt;NA&gt;     405    59     63      80     65     80
-##  9      9 Blas~ Water  &lt;NA&gt;     530    79     83     100     85    105
-## 10     10 Cate~ Bug    &lt;NA&gt;     195    45     30      35     20     20
+##  1      1 Bulb… Grass  Poison   318    45     49      49     65     65
+##  2      2 Ivys… Grass  Poison   405    60     62      63     80     80
+##  3      3 Venu… Grass  Poison   525    80     82      83    100    100
+##  4      4 Char… Fire   &lt;NA&gt;     309    39     52      43     60     50
+##  5      5 Char… Fire   &lt;NA&gt;     405    58     64      58     80     65
+##  6      6 Char… Fire   Flying   534    78     84      78    109     85
+##  7      7 Squi… Water  &lt;NA&gt;     314    44     48      65     50     64
+##  8      8 Wart… Water  &lt;NA&gt;     405    59     63      80     65     80
+##  9      9 Blas… Water  &lt;NA&gt;     530    79     83     100     85    105
+## 10     10 Cate… Bug    &lt;NA&gt;     195    45     30      35     20     20
 ## # ... with 711 more rows, and 13 more variables: speed &lt;dbl&gt;,
 ## #   generation &lt;dbl&gt;, is_legendary &lt;lgl&gt;, color &lt;chr&gt;,
 ## #   has_gender &lt;lgl&gt;, pr_male &lt;dbl&gt;, egg_group_1 &lt;chr&gt;,
@@ -471,7 +526,7 @@ ggplot(pokemon, aes(weight_kg, height_m)) +
   facet_wrap(.~ body_style)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -482,7 +537,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -494,7 +549,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -507,7 +562,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -521,7 +576,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -546,7 +601,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -562,7 +617,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -579,7 +634,7 @@ pokemon %&gt;%
   geom_bar() + coord_flip()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -608,7 +663,7 @@ pokemon %&gt;%
 ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -620,7 +675,7 @@ pokemon %&gt;%
   geom_boxplot()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -633,7 +688,7 @@ pokemon %&gt;%
   geom_boxplot()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -685,7 +740,7 @@ pokemon %&gt;%
   geom_point()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-37-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -699,7 +754,7 @@ pokemon %&gt;%
   geom_point()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-38-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -805,7 +860,7 @@ ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-37-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-42-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -836,9 +891,9 @@ At the center of the logistic regression analysis is the task estimating the log
 
 ## Important to remember
 
-* _Logistic regression is sensative to overfitting_ - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+* *Logistic regression is sensative to overfitting* - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
 
-* _Logistic regresion has a pseudo R-square_ - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+* *Logistic regresion has a pseudo R-square* - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
 A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
 
 ---
@@ -884,6 +939,83 @@ summary(mylogit)
 ```
 ]
 ---
+
+class: exercise
+##Exercise
+
+Run a logistic regression to see if a pokemon's chance for mega evolution grows with its height, weight, and defense abilities
+
+
+.bottom-right[
+![](img/250px-335Zangoose.png)
+]
+---
+## Multinomial Logistic Regression
+
+* Used to explain the relationship between one nominal dependent variable and one or more independent variables.
+* For a nominal dependent variable with k categories, the multinomial regression model estimates k-1 logit equations
+* Multinomial regression is similar to discriminant analysis. The latter should be used if the predictors are normaly distributed.
+
+Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normaly distributed.
+
+
+---
+
+## Example:
+We want to know how pokemons' defense, attack, and speed abilities associated with its type 
+
+---
+.small[
+
+
+
+```r
+library(nnet)
+multi_test &lt;- multinom(type_1 ~ defense + attack + speed, data = pokemon)
+```
+
+```
+## # weights:  90 (68 variable)
+## initial  value 2083.958037 
+## iter  10 value 1923.081103
+## iter  20 value 1918.884589
+## iter  30 value 1917.591829
+## iter  40 value 1854.487807
+## iter  50 value 1815.107820
+## iter  60 value 1798.485782
+## iter  70 value 1796.648244
+## final  value 1796.645545 
+## converged
+```
+]
+---
+.small[
+
+```r
+summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+```
+
+```
+##          (Intercept)     defense      attack       speed
+## Dark      -3.0160988 -1.72894738  3.15670744  1.23691194
+## Dragon    -4.4890421 -0.69995647  4.63631160  0.57253628
+## Electric  -2.1560910 -1.94498722 -0.01285476  4.06387739
+## Fairy     -0.2185608 -0.20956501  0.20411435 -1.60392097
+## Fighting  -2.1887535 -3.08011814  5.41633443 -1.44137119
+## Fire      -2.2884974 -2.42832695  3.22308660  1.51879686
+## Flying    -2.1917629 -0.53222906 -0.10979310  2.24373118
+## Ghost     -1.9423157  1.18695658 -0.21107950  0.13101286
+## Grass     -0.4423002 -0.33157992  1.33949133 -0.58139138
+## Ground    -3.5225312  0.34629213  3.74572077 -1.21205103
+## Ice       -1.7950613  0.11139582  0.67066805 -0.03244446
+## Normal     0.5466380 -3.86609903  2.52250933  1.56759553
+## Poison    -1.7956964 -0.65614623  1.60654940 -0.06700392
+## Psychic   -1.2741434  0.18612493 -1.74818605  2.96790879
+## Rock      -3.8401022  3.04262579  3.21826921 -2.56213537
+## Steel     -4.4374484  4.55650465  1.53949028 -0.83446959
+## Water     -0.4618186  0.06046161  0.86600269  0.70769184
+```
+]
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script src="https://platform.twitter.com/widgets.js"></script>

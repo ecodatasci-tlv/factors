@@ -12,3 +12,7 @@ forcats
 bindrcpp
 magrittr
 ggpubr
+devtools
+usethis
+reprex
+beepr

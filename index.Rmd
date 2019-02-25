@@ -46,13 +46,6 @@ eyes
 ```
 
 ---
-
-# Why care?
-
-By default, `stringsAsFactors = TRUE` when you use `read.csv()`
-
-It's easy to get tripped up by factors if you don't understand how they work...or even if you do
----
 class: inverse, middle, center
 
 # Some examples
@@ -169,6 +162,13 @@ bind_rows(a, b) #<<
 ]
 ---
 
+# Why care?
+
+By default, `stringsAsFactors = TRUE` when you use `read.csv()`
+
+It's easy to get tripped up by factors if you don't understand how they work...or even if you do
+---
+
 <blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">10 years after convincing all scientists to switch to R: &quot;10% of genetics papers contain error due to stringsAsFactors&quot;</p>&mdash; Austin Richardson (@heyaudy) <a href="https://twitter.com/heyaudy/status/770658444286189569?ref_src=twsrc%5Etfw">August 30, 2016</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
@@ -215,8 +215,12 @@ Source: https://forcats.tidyverse.org/
 ---
 
 class: center, middle
+background-image: url(img/forpoke_with_ball.png)
+background-position: center
+background-size: auto 80%
 
-![](img/poke-forcats.png)
+---
+
 ```{r message = FALSE}
 pokemon <- read_csv("data/pokemon.csv")
 ```
@@ -458,7 +462,7 @@ class: middle, center, inverse
 
 ---
 
-## Statistical tests that can be used when your predictor is factorial
+## Statistical tests that can be used when your response is categorical
 
 1. Chi-square
 2. Logistic regression
@@ -472,34 +476,46 @@ class: middle, center
 
 Tests whether there is a different between the expected and the observed frequencies of one or more categories. 
 
+.small[
+In other words, use it when your response and predictor are categorical
+]
 
-<sub> In other words, use it when your response and predictor are categorical <sub>
 ---
 
-Example: Are flying pokemons are more legendary than expected by chance?
+# Example: 
 
+Are electric pokemons are more yellow than expected by chance?
+
+.center[
+![](img/pikachu.jpg)
+]
+---
+
+.small[
 ```{r}
 #create a table that has the frequency of colors to types of pokemons
 chi_data <- table(pokemon$type_1,pokemon$color)
 chi_data
-#run the chi-square test
-a <- chisq.test(chi_data)
-a
+```
+]
+---
 
+```{r}
+#run the chi-square test
+chi_test <- chisq.test(chi_data)
+chi_test
 ```
 
 ---
 
-##### Now lets use the residuals to plot the chi-square data and findout how type is associated with color
+##### Let's plot the chi-square residuals and find out how type is associated with color
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 if(!require("ggpubr")) install.packages("ggpubr")
 ```
 
 ```{r}
-library(ggpubr)
-
-res <- as.data.frame(a$residuals)
-ggballoonplot(res, size = "Freq",fill = "Freq")+
+res <- as.data.frame(chi_test$residuals)
+ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```
 
@@ -507,7 +523,7 @@ ggballoonplot(res, size = "Freq",fill = "Freq")+
 
 class: exercise
 
-# Test whether "grass" egg group pokemons hatch into green adults more than expected by chance
+# Test whether `grass` egg group pokemons hatch into green adults more than expected by chance
 
 ![](img/green_cat_small.png)
 ---
@@ -541,7 +557,8 @@ A solution: present the results of a goodness of fit test such as Hosmer-Lemesho
 
 # Example:
 
-Question: Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
+Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `catch_rate` abilities?
+
 ---
 .small[
 ```{r warning = FALSE}

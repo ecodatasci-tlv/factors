@@ -3,7 +3,7 @@
   <head>
     <title>Wrangling categorical variables in R</title>
     <meta charset="utf-8">
-    <meta name="date" content="2019-02-25" />
+    <meta name="date" content="2019-02-26" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
 ## <a href="https://ecodatasci-tlv.github.io/factors/" class="uri">https://ecodatasci-tlv.github.io/factors/</a>
-### 2019-02-25
+### 2019-02-26
 
 ---
 
@@ -939,7 +939,11 @@ summary(mylogit)
 ```
 ]
 ---
+class: middle, center
 
+Farther reading onlogistic rgression
+https://stats.idre.ucla.edu/r/dae/logit-regression/
+---
 class: exercise
 ##Exercise
 
@@ -958,11 +962,14 @@ Run a logistic regression to see if a pokemon's chance for mega evolution grows 
 
 Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normaly distributed.
 
-
+.small[
+More information on the test
+https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
+]
 ---
 
 ## Example:
-We want to know how pokemons' defense, attack, and speed abilities associated with its type 
+We want to know how pokemons' defense, attack, and speed abilities associated with its body style
 
 ---
 .small[
@@ -971,20 +978,31 @@ We want to know how pokemons' defense, attack, and speed abilities associated wi
 
 ```r
 library(nnet)
-multi_test &lt;- multinom(type_1 ~ defense + attack + speed, data = pokemon)
+pokemon$body_style&lt;- as.factor(pokemon$body_style)
+levels(pokemon$body_style)
 ```
 
 ```
-## # weights:  90 (68 variable)
-## initial  value 2083.958037 
-## iter  10 value 1923.081103
-## iter  20 value 1918.884589
-## iter  30 value 1917.591829
-## iter  40 value 1854.487807
-## iter  50 value 1815.107820
-## iter  60 value 1798.485782
-## iter  70 value 1796.648244
-## final  value 1796.645545 
+##  [1] "bipedal_tailed"   "bipedal_tailless" "four_wings"      
+##  [4] "head_arms"        "head_base"        "head_legs"       
+##  [7] "head_only"        "insectoid"        "multiple_bodies" 
+## [10] "quadruped"        "serpentine_body"  "several_limbs"   
+## [13] "two_wings"        "with_fins"
+```
+
+```r
+multi_test &lt;- multinom(body_style ~ defense + attack + speed, data = pokemon)
+```
+
+```
+## # weights:  70 (52 variable)
+## initial  value 1902.760335 
+## iter  10 value 1680.948966
+## iter  20 value 1677.348542
+## iter  30 value 1636.162688
+## iter  40 value 1605.701126
+## iter  50 value 1589.026351
+## final  value 1589.011520 
 ## converged
 ```
 ]
@@ -992,29 +1010,93 @@ multi_test &lt;- multinom(type_1 ~ defense + attack + speed, data = pokemon)
 .small[
 
 ```r
-summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+z&lt;- summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+z
 ```
 
 ```
-##          (Intercept)     defense      attack       speed
-## Dark      -3.0160988 -1.72894738  3.15670744  1.23691194
-## Dragon    -4.4890421 -0.69995647  4.63631160  0.57253628
-## Electric  -2.1560910 -1.94498722 -0.01285476  4.06387739
-## Fairy     -0.2185608 -0.20956501  0.20411435 -1.60392097
-## Fighting  -2.1887535 -3.08011814  5.41633443 -1.44137119
-## Fire      -2.2884974 -2.42832695  3.22308660  1.51879686
-## Flying    -2.1917629 -0.53222906 -0.10979310  2.24373118
-## Ghost     -1.9423157  1.18695658 -0.21107950  0.13101286
-## Grass     -0.4423002 -0.33157992  1.33949133 -0.58139138
-## Ground    -3.5225312  0.34629213  3.74572077 -1.21205103
-## Ice       -1.7950613  0.11139582  0.67066805 -0.03244446
-## Normal     0.5466380 -3.86609903  2.52250933  1.56759553
-## Poison    -1.7956964 -0.65614623  1.60654940 -0.06700392
-## Psychic   -1.2741434  0.18612493 -1.74818605  2.96790879
-## Rock      -3.8401022  3.04262579  3.21826921 -2.56213537
-## Steel     -4.4374484  4.55650465  1.53949028 -0.83446959
-## Water     -0.4618186  0.06046161  0.86600269  0.70769184
+##                  (Intercept)    defense     attack      speed
+## bipedal_tailless  1.18749511  0.2400757 -0.4524127 -2.4337327
+## four_wings       -2.48903423 -0.6082106 -0.9787830  2.2772756
+## head_arms        -0.32452980  2.2516206 -2.5342064 -1.5611265
+## head_base         0.06305546  3.0856705 -3.4499647 -1.7620993
+## head_legs         0.66655338  0.7273578 -1.8135951 -2.4752083
+## head_only         0.57065728  3.3862641 -4.7738335 -0.9185228
+## insectoid        -0.29881862  2.1277536 -1.8087106 -2.5092639
+## multiple_bodies  -2.46301454  3.8395014 -2.0208084 -0.4735239
+## quadruped         0.38797732  0.7417399 -1.6273184  0.1306347
+## serpentine_body  -1.15719645  2.6139819 -2.0045508 -1.5619130
+## several_limbs    -1.19130963  1.7628633 -0.3896117 -2.6449461
+## two_wings        -2.21854835  0.6181348 -3.1473156  3.8489004
+## with_fins         0.01210612 -0.7475730 -1.5411417 -0.2220883
 ```
+
+```r
+# Everythig is compared to "bipedal_tailed"
+```
+]
+
+---
+.small[
+
+```r
+p &lt;- (1 - pnorm(abs(z), 0, 1)) * 2
+p
+```
+
+```
+##                  (Intercept)      defense       attack        speed
+## bipedal_tailless  0.23503239 0.8102715790 6.509717e-01 0.0149440258
+## four_wings        0.01280906 0.5430478252 3.276872e-01 0.0227697743
+## head_arms         0.74553697 0.0243462581 1.127023e-02 0.1184939143
+## head_base         0.94972234 0.0020309373 5.606599e-04 0.0780525204
+## head_legs         0.50505746 0.4670068065 6.974009e-02 0.0133158478
+## head_only         0.56823198 0.0007085117 1.807518e-06 0.3583452256
+## insectoid         0.76507845 0.0333575221 7.049598e-02 0.0120983059
+## multiple_bodies   0.01377743 0.0001232844 4.329961e-02 0.6358394467
+## quadruped         0.69803281 0.4582449362 1.036695e-01 0.8960643129
+## serpentine_body   0.24719211 0.0089493784 4.501109e-02 0.1183084912
+## several_limbs     0.23353206 0.0779235486 6.968237e-01 0.0081703930
+## two_wings         0.02651747 0.5364864923 1.647770e-03 0.0001186492
+## with_fins         0.99034095 0.4547177691 1.232823e-01 0.8242451264
+```
+
+]
+
+---
+We can exponentiate the coefficients from our model to see these risk ratios
+
+
+
+```r
+exp(coef(multi_test))
+```
+
+```
+##                  (Intercept)   defense    attack     speed
+## bipedal_tailless  1.75472339 1.0013276 0.9976274 0.9874592
+## four_wings        0.07932100 0.9921245 0.9893703 1.0227772
+## head_arms         0.80734346 1.0156863 0.9800257 0.9881693
+## head_base         1.04649297 1.0217192 0.9689031 0.9844539
+## head_legs         1.79961903 1.0075551 0.9785287 0.9702592
+## head_only         1.47729755 1.0230719 0.9567726 0.9923737
+## insectoid         0.80471381 1.0158360 0.9843688 0.9779113
+## multiple_bodies   0.07032018 1.0316839 0.9773144 0.9945880
+## quadruped         1.19258253 1.0038961 0.9919404 1.0006196
+## serpentine_body   0.41789830 1.0192781 0.9825792 0.9865751
+## several_limbs     0.28084096 1.0172282 0.9953562 0.9640250
+## two_wings         0.25872831 1.0044195 0.9787804 1.0237580
+## with_fins         1.00868260 0.9926585 0.9863215 0.9982006
+```
+
+---
+class: exercise
+##Exercise
+
+Find out how pokemons' defense, attack, and speed abilities associated with its egg group
+
+.bottom-right[
+![](https://i.gifer.com/REMn.gif)
 ]
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

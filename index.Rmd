@@ -633,7 +633,11 @@ summary(mylogit)
 ```
 ]
 ---
+class: middle, center
 
+Farther reading onlogistic rgression
+https://stats.idre.ucla.edu/r/dae/logit-regression/
+---
 class: exercise
 ##Exercise
 
@@ -652,11 +656,14 @@ Run a logistic regression to see if a pokemon's chance for mega evolution grows 
 
 Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normaly distributed.
 
-
+.small[
+More information on the test
+https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
+]
 ---
 
 ## Example:
-We want to know how pokemons' defense, attack, and speed abilities associated with its type 
+We want to know how pokemons' defense, attack, and speed abilities associated with its body style
 
 ---
 .small[
@@ -666,14 +673,44 @@ if(!require("nnet")) install.packages("nnet")
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 library(nnet)
-multi_test <- multinom(type_1 ~ defense + attack + speed, data = pokemon)
+pokemon$body_style<- as.factor(pokemon$body_style)
+levels(pokemon$body_style)
+multi_test <- multinom(body_style ~ defense + attack + speed, data = pokemon)
+
 ```
 ]
 ---
 .small[
 ```{r}
-summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+z<- summary(multi_test)$coefficients/summary(multi_test)$standard.errors
+z
+# Everythig is compared to "bipedal_tailed"
 ```
 ]
 
+---
+.small[
+```{r}
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+p
+```
 
+]
+
+---
+We can exponentiate the coefficients from our model to see these risk ratios
+
+
+```{r}
+exp(coef(multi_test))
+```
+
+---
+class: exercise
+##Exercise
+
+Find out how pokemons' defense, attack, and speed abilities associated with its egg group
+
+.bottom-right[
+![](https://i.gifer.com/REMn.gif)
+]

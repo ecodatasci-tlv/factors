@@ -574,18 +574,19 @@ chi_test
 
 ---
 
-##### Let's plot the chi-square residuals and find out how type is associated with color
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 if(!require("ggpubr")) install.packages("ggpubr")
 ```
----
 
+### Look at the residuls to see what is significantly different than expected by chance
 ```{r}
 res <- as.data.frame(chi_test$residuals)
 head(res)
 ```
 
 ---
+##### Let's plot the chi-square residuals and find out how type is associated with color
+
 ```{r}
 ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
@@ -620,9 +621,9 @@ At the center of the logistic regression analysis is the task estimating the log
 
 ## Important to remember
 
-* *Logistic regression is sensative to overfitting* - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
+* **Logistic regression is sensative to overfitting** - adding more predictors will alsways increase the varience explained, but too many predictors can create overfitting and reduces the generalizability of the model beyond your data
 
-* *Logistic regresion has a pseudo R-square* - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
+* **Logistic regresion has a pseudo R-square** - report it with caution because Numerous pseudo-R-square tend to have many computational problems that cause them to be artificially high or low.
 A solution: present the results of a goodness of fit test such as Hosmer-Lemeshow
 
 ---

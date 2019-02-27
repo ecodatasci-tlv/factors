@@ -720,3 +720,14 @@ Find out how pokemons' defense, attack, and speed abilities associated with its 
 .bottom-right[
 ![](https://i.gifer.com/REMn.gif)
 ]
+
+---
+
+# Resources
+
+This presentation was based in large part on the following resources:
+
+- [Working with categorical data in R without losing your mind](http://www.amelia.mn/WranglingCats.pdf) by Amelia McNamara
+- [Be the boss of your factors](https://stat545.com/block029_factors.html), Stat545
+- [Wrangling categorical data in R](https://peerj.com/preprints/3163.pdf) by Amelia McNamara and Nicholas Horton
+

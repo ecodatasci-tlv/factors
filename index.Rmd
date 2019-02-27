@@ -635,14 +635,23 @@ Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `c
 ---
 .small[
 ```{r warning = FALSE}
-mylogit <- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
+mylogit <- glm(is_legendary ~ speed, data = pokemon, family = "binomial")
 summary(mylogit)
 ```
 ]
 ---
+## Plot the logistic regression
+```{r}
+newdat<- data.frame(speed=seq(min(pokemon$speed), max(pokemon$speed),len=length(pokemon$speed)*3))
+newdat$is_legendary = predict(mylogit, newdata=newdat, type="response")
+plot(is_legendary~speed, data=pokemon, col="red4")
+lines(is_legendary ~ speed, newdat, col="green4", lwd=2)
+```
+
+---
 class: middle, center
 
-Farther reading onlogistic rgression
+Farther reading on logistic rgression
 https://stats.idre.ucla.edu/r/dae/logit-regression/
 ---
 class: exercise

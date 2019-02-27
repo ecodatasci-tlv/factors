@@ -924,42 +924,51 @@ Does pokemon becomes legendary with the in increase in `speed`, `attack`, and `c
 .small[
 
 ```r
-mylogit &lt;- glm(is_legendary ~ speed + attack + catch_rate, data = pokemon, family = "binomial")
+mylogit &lt;- glm(is_legendary ~ speed, data = pokemon, family = "binomial")
 summary(mylogit)
 ```
 
 ```
 ## 
 ## Call:
-## glm(formula = is_legendary ~ speed + attack + catch_rate, family = "binomial", 
-##     data = pokemon)
+## glm(formula = is_legendary ~ speed, family = "binomial", data = pokemon)
 ## 
 ## Deviance Residuals: 
-##      Min        1Q    Median        3Q       Max  
-## -2.42791  -0.06481  -0.00688   0.00000   2.84786  
+##     Min       1Q   Median       3Q      Max  
+## -1.6065  -0.3647  -0.2335  -0.1487   2.8500  
 ## 
 ## Coefficients:
 ##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -4.74204    1.76647  -2.684  0.00726 ** 
-## speed        0.03038    0.01437   2.114  0.03454 *  
-## attack       0.04221    0.01427   2.958  0.00310 ** 
-## catch_rate  -0.14565    0.01941  -7.504 6.17e-14 ***
+## (Intercept) -6.32249    0.63305  -9.987  &lt; 2e-16 ***
+## speed        0.04557    0.00669   6.812 9.62e-12 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 342.184  on 720  degrees of freedom
-## Residual deviance:  73.909  on 717  degrees of freedom
-## AIC: 81.909
+##     Null deviance: 342.18  on 720  degrees of freedom
+## Residual deviance: 283.16  on 719  degrees of freedom
+## AIC: 287.16
 ## 
-## Number of Fisher Scoring iterations: 10
+## Number of Fisher Scoring iterations: 6
 ```
 ]
 ---
+## Plot the logistic regression
+
+```r
+newdat&lt;- data.frame(speed=seq(min(pokemon$speed), max(pokemon$speed),len=length(pokemon$speed)*3))
+newdat$is_legendary = predict(mylogit, newdata=newdat, type="response")
+plot(is_legendary~speed, data=pokemon, col="red4")
+lines(is_legendary ~ speed, newdat, col="green4", lwd=2)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-45-1.png" style="display: block; margin: auto;" /&gt;
+
+---
 class: middle, center
 
-Farther reading onlogistic rgression
+Farther reading on logistic rgression
 https://stats.idre.ucla.edu/r/dae/logit-regression/
 ---
 class: exercise

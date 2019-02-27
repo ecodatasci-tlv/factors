@@ -578,9 +578,15 @@ chi_test
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 if(!require("ggpubr")) install.packages("ggpubr")
 ```
+---
 
 ```{r}
 res <- as.data.frame(chi_test$residuals)
+head(res)
+```
+
+---
+```{r}
 ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```

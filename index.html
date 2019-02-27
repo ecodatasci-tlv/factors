@@ -3,7 +3,7 @@
   <head>
     <title>Wrangling categorical variables in R</title>
     <meta charset="utf-8">
-    <meta name="date" content="2019-02-26" />
+    <meta name="date" content="2019-02-27" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom-fonts.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Wrangling categorical variables in R
 ## <a href="https://ecodatasci-tlv.github.io/factors/" class="uri">https://ecodatasci-tlv.github.io/factors/</a>
-### 2019-02-26
+### 2019-02-27
 
 ---
 
@@ -852,15 +852,32 @@ chi_test
 
 ##### Let's plot the chi-square residuals and find out how type is associated with color
 
+---
 
 
 ```r
 res &lt;- as.data.frame(chi_test$residuals)
+head(res)
+```
+
+```
+##       Var1  Var2        Freq
+## 1      Bug Black  0.12192828
+## 2     Dark Black  6.06157722
+## 3   Dragon Black -0.06316109
+## 4 Electric Black  0.31820289
+## 5    Fairy Black -0.86862399
+## 6 Fighting Black -1.05336131
+```
+
+---
+
+```r
 ggpubr::ggballoonplot(res, size = "Freq",fill = "Freq")+
   scale_fill_viridis_c(option = "D")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-42-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-43-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 

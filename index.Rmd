@@ -651,13 +651,13 @@ lines(is_legendary ~ speed, newdat, col="green4", lwd=2)
 ---
 class: middle, center
 
-Farther reading on logistic rgression
+Farther reading on logistic regression
 https://stats.idre.ucla.edu/r/dae/logit-regression/
 ---
 class: exercise
 ##Exercise
 
-Run a logistic regression to see if a pokemon's chance for mega evolution grows with its height, weight, and defense abilities
+Run a logistic regression to see if a Pokemon's chance for mega evolution grows with its height, weight, and defense abilities
 
 
 .bottom-right[
@@ -668,14 +668,11 @@ Run a logistic regression to see if a pokemon's chance for mega evolution grows 
 
 * Used to explain the relationship between one nominal dependent variable and one or more independent variables.
 * For a nominal dependent variable with k categories, the multinomial regression model estimates k-1 logit equations
-* Multinomial regression is similar to discriminant analysis. The latter should be used if the predictors are normaly distributed.
+* Multinomial regression is similar to discriminant analysis. The latter should be used if the predictors are normally distributed.
 
-Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normaly distributed.
+Bottom line: Use multinomial regression when you have a categorical variable with more than two categories, and your predictors are not normally distributed.
 
-.small[
-More information on the test
-https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
-]
+
 ---
 
 ## Example:
@@ -720,7 +717,11 @@ We can exponentiate the coefficients from our model to see these risk ratios
 ```{r}
 exp(coef(multi_test))
 ```
+---
+class: middle, center
 
+More information on the test
+https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
 ---
 class: exercise
 ##Exercise
